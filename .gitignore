@@ -1,0 +1,17 @@
+.build/
+.swiftpm/
+Packages/
+Package.resolved
+
+xtool/
+build.log
+.xtool-cache/
+
+.DS_Store
+*.swp
+*~.nib
+
+.vscode/
+.idea/
+compile_commands.json
+.cache/
