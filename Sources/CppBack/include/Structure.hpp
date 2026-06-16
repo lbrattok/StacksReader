@@ -11,7 +11,7 @@ class Structure {
     std::string _name;
     std::vector<int> _ref;
     std::string _type;
-    std::vector<Structure> children;
+    std::vector<Structure> _children;
 
     public:
         Structure() = default;
@@ -25,6 +25,3 @@ class Structure {
 
         const std::vector<Structure>& children() const { return _children; }
 };
-
-#endif
-

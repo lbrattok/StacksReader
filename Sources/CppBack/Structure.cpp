@@ -26,9 +26,9 @@ std::vector<int> parse_reference(const std::string& ref_str) {
 }
 
 
-Structure::Structure(std::string& json_str) {
+Structure::Structure(const std::string& json_str) {
 
-    json j = json::pars(json_str);
+    json j = json::parse(json_str);
 
     _tag = j.value("tag", "");
     _type = j.value("type", "");
@@ -40,26 +40,12 @@ Structure::Structure(std::string& json_str) {
 
     if (j.contains("children") && j["reference"].is_array()) {
         for (const auto& json_child : j["children"]) {
-            _children.push_back(Structure(child_json.dump()));
+            _children.push_back(Structure(json_child.dump()));
         }
     }
 
 }
 
-
-void Structure::print() const {
-    std::cout << this -> _tag << std::endl;
-    std::cout << this -> _type << std::endl;
-    for (auto e : this -> ref)
-        std::cout << e << " ";
-    std::cout << std::endl;
-    std::cout << this -> _name << std::endl;
-    std::cout << "\nCHILDREN" << std::endl;
-    if ((this -> children).size() > 0) {
-        for (auto s : this -> children)
-            s -> print();
-    }
-}
 
 std::string Structure::name() const {
     return this -> _name;
@@ -75,7 +61,7 @@ std::string Structure::type() const {
 
 std::string Structure::reference() const {
     if (_ref.empty()) return "";
-    std::string res = "" = std::to_string(_ref[0]);
+    std::string res = std::to_string(_ref[0]);
     for (size_t i = 1; i < _ref.size(); ++i) {
         res += "." + std::to_string(_ref[i]);
     }
