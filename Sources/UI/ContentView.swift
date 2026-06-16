@@ -1,21 +1,43 @@
 import SwiftUI
+import Core
 
 struct ContentView: View {
-    let sampleStacksContent = """
-    <p>Let \\(X\\) be a scheme. A morphism of schemes \\(f: X \\to Y\\) is called <em>affine</em> if the inverse image of every affine open \\(V \\subset Y\\) is an affine open of \\(X\\).</p>
-    <p>Consider the following equation:</p>
-    $$ \\int_{a}^{b} x^2 dx = \\frac{b^3 - a^3}{3} $$
-    <p>This is a test of block and inline math rendering.</p>
-    """
+    @State private var htmlContent: String = ""
+    @State private var isLoading: Bool = true
+
+    let currentTag = "015I"
 
     var body: some View {
         NavigationView {
-            VStack {
-                WebView(contentHTML: sampleStacksContent)
-                    .edgesIgnoringSafeArea(.bottom)
+            ZStack {
+                if !htmlContent.isEmpty {
+                    WebView(contentHTML: htmlContent)
+                        .edgesIgnoringSafeArea(.bottom)
+                }
+
+                if isLoading {
+                    ProgressView("Загрузка")
+                        .scaleEffect(1.2)
+                }
             }
-            .navigationTitle("Stacks Project")
+            .navigationTitle("Tag \(currentTag)")
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                await loadData()
+            }
+        }
+    }
+
+    private func loadData() async {
+        isLoading = true
+        do {
+            let result = try await NetworkManager.shared.fetchTagContent(tag: currentTag)
+
+            htmlContent = result
+            isLoading = false
+        } catch {
+            htmlContent = "<p style='color:red'>Ошибка загрузки: \(error.localizedDescription)</p>"
+            isLoading = false
         }
     }
 }
