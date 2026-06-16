@@ -9,24 +9,34 @@ let package = Package(
     products: [
         .library(
             name: "StacksReader",
-            targets: ["StacksReader"]
+            targets: ["UI"]
         ),
     ],
     targets: [
         .target(
-            name: "CppEngine",
-            path: "Sources/CppEngine",
+            name: "CppBack",
+            path: "Sources/CppBack",
             publicHeadersPath: "include",
             cxxSettings: [
                 .unsafeFlags(["-O3", "-std=c++20"])
             ]
         ),
+
         .target(
-            name: "StacksReader",
-            dependencies: ["CppEngine"],
-            path: "Sources/StacksReader",
+            name: "Core",
+            dependencies: ["CppBack"],
+            path: "Sources/Core",
+            swiftSettings: [
+                .interoperabilityMode(.Cxx)
+            ]
+        ),
+
+        .target(
+            name: "UI",
+            dependencies: ["Core", "CppBack"],
+            path: "Sources/UI",
             resources: [
-                .copy("../../Resources") 
+                .copy("../../Resources") // Копируем MathJax и HTML в итоговый бандл
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx)
