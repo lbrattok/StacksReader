@@ -1,43 +1,60 @@
 import SwiftUI
 import Core
+import CppBack
+import CxxStdlib
 
 struct ContentView: View {
-    @State private var htmlContent: String = ""
-    @State private var isLoading: Bool = true
+    @State private var tableOfContents: [Structure] = []
 
-    let currentTag = "015I"
+    @State private var selectedTag: String? = nil
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                if !htmlContent.isEmpty {
-                    WebView(contentHTML: htmlContent)
-                        .edgesIgnoringSafeArea(.bottom)
+        NavigationStack {
+            ScrollView {
+                LazyVStack(alignment: .leading) {
+                    ForEach(tableOfContents) { rootNode in
+                        StaticStructureView(node: rootNode) { tag in
+                            self.selectedTag = tag
+                        }
+                    }
                 }
+                .padding()
+            }
+            .navigationTitle("Stacks Project")
 
-                if isLoading {
-                    ProgressView("Загрузка")
-                        .scaleEffect(1.2)
-                }
+            .navigationDestination(item: $selectedTag) { tag in
+                TagDetailView(tag: tag)
             }
-            .navigationTitle("Tag \(currentTag)")
-            .navigationBarTitleDisplayMode(.inline)
-            .task {
-                await loadData()
-            }
+        }
+        .onAppear {
+            loadMockStructure()
         }
     }
 
-    private func loadData() async {
-        isLoading = true
-        do {
-            let result = try await NetworkManager.shared.fetchTagContent(tag: currentTag)
 
-            htmlContent = result
-            isLoading = false
-        } catch {
-            htmlContent = "<p style='color:red'>Ошибка загрузки: \(error.localizedDescription)</p>"
-            isLoading = false
+    private func loadMockStructure() {
+        let jsonStr = """
+        {
+        "tag": "0001",
+        "name": "Part 1: Preliminaries",
+        "type": "part",
+        "reference": "I",
+        "children": [
+            {
+            "tag": "015I",
+            "name": "Affine Morphisms of Schemes",
+            "type": "lemma",
+            "reference": "1.1",
+            "children": []
+            }
+        ]
         }
+        """
+
+        let cppRoot = jsonStr.withCString { cString in
+            Structure(std.string(cString))
+        }
+
+        self.tableOfContents = [cppRoot]
     }
 }
