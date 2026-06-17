@@ -42,9 +42,6 @@ Structure::Structure(const std::string& json_str) {
                 _children.push_back(Structure(json_child.dump()));
             }
         }
-        else {
-            _name += "НЕ ПОПАЛ. ";
-        }
     } catch (const std::exception& e) {
         _name = std::string("Error: ") + e.what();
     }

@@ -2,7 +2,7 @@ import SwiftUI
 import Core
 import CppBack
 
-struct StaticStructureView: View {
+struct StructureView: View {
     let node: Structure
     let onTagSelected: (String) -> Void
 
@@ -11,9 +11,7 @@ struct StaticStructureView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button(action: {
-                if node.swiftChildren.isEmpty {
-                    onTagSelected(node.id)
-                }
+                onTagSelected(node.id)
             }) {
                 HStack(alignment: .top) {
                     Text("\(node.swiftType.prefix(1).capitalized). \(node.swiftReference)")
@@ -38,7 +36,7 @@ struct StaticStructureView: View {
             .buttonStyle(PlainButtonStyle())
 
             ForEach(node.swiftChildren) { child in
-                StaticStructureView(
+                StructureView(
                     node: child,
                     onTagSelected: onTagSelected,
                     level: level + 1
