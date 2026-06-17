@@ -1,32 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <script>
-    MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-      chtml: { scale: 1.1 }
-    };
-    </script>
-    <script type="text/javascript" id="MathJax-script" async src="mathjax/tex-chtml.js"></script>
-
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            padding: 16px;
-            line-height: 1.6;
-            color: #000000;
+        :root { color-scheme: light dark; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            font-size: 105%; line-height: 1.6; padding: 16px; margin: 0; 
         }
-
-        @media (prefers-color-scheme: dark) {
-            body {
-                color: #F2F2F7;
+        a { text-decoration: none; }
+        
+        /* СВЕТЛАЯ ТЕМА */
+        @media (prefers-color-scheme: light) { 
+            a { color: #007AFF; } 
+        }
+        
+        /* ТЕМНАЯ ТЕМА */
+        @media (prefers-color-scheme: dark) { 
+            a { color: #5E92F3; } 
+            body { 
+                color: #ffffff !important; /* Явно задаем базовый белый */
+                background-color: #000000; 
+            } 
+            
+            /* 1. Уничтожаем инлайн-хардкод XyJax: заставляем весь текст наследовать белый цвет body */
+            mjx-container,
+            mjx-container * {
+                color: inherit !important;
+                border-color: inherit !important;
+            }
+            
+            /* 2. Заставляем все SVG-элементы (стрелки и заливки) использовать сброшенный белый цвет */
+            mjx-container svg path,
+            mjx-container svg line,
+            mjx-container svg polygon,
+            mjx-container svg rect,
+            mjx-container svg text {
+                stroke: currentColor !important;
+                fill: currentColor !important;
             }
         }
+        
+        mjx-container[display="true"] { 
+            overflow-x: auto; overflow-y: visible; max-width: 100%; padding: 15px 0; 
+        }
+        mjx-container[display="false"] { white-space: nowrap; }
     </style>
+
+    <script>
+        window.MathJax = {
+            loader: {
+                paths: {custom: './mathjax'},
+                load: ['[custom]/xypic.js'] // Теперь этот запрос пройдет успешно!
+            },
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: {'[+]': ['amscd', 'ams', 'newcommand', 'configmacros', 'xypic']}
+            },
+            chtml: {
+                fontURL: './mathjax/fonts/woff-v2'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="./mathjax/tex-chtml-full.js"></script>
 </head>
 <body>
-    <div id="content">{{STACKS_CONTENT}}</div>
+    {{STACKS_CONTENT}}
 </body>
 </html>

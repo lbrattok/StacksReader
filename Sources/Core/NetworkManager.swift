@@ -20,6 +20,7 @@ public final class NetworkManager: Sendable {
             throw URLError(.cannotDecodeRawData)
         }
     }
+
     public func fetchTagStructure(tag: String) async throws -> String {
         let urlString = "https://stacks.math.columbia.edu/data/tag/\(tag)/structure"
         guard let url = URL(string: urlString) else { throw URLError(.badURL) }

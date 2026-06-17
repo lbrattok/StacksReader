@@ -36,7 +36,7 @@ let package = Package(
             dependencies: ["Core", "CppBack"],
             path: "Sources/UI",
             resources: [
-                .copy("../../Resources") // Копируем MathJax и HTML в итоговый бандл
+                .copy("../../Resources")
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx)
