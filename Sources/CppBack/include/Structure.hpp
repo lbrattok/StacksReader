@@ -9,7 +9,7 @@ std::string json_from_htm(std::string htm);
 class Structure {
     std::string _tag;
     std::string _name;
-    std::vector<int> _ref;
+    std::string _ref;
     std::string _type;
     std::vector<Structure> _children;
 
@@ -23,5 +23,5 @@ class Structure {
         std::string reference() const;
         std::string type() const;
 
-        const std::vector<Structure>& children() const { return _children; }
+        const std::vector<Structure> children() const { return _children; }
 };

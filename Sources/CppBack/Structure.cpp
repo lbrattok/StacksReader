@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <exception>
 
 #include <json.hpp>
 
@@ -27,23 +28,26 @@ std::vector<int> parse_reference(const std::string& ref_str) {
 
 
 Structure::Structure(const std::string& json_str) {
+    try {
+        json j = json::parse(json_str);
 
-    json j = json::parse(json_str);
+        _tag = j.value("tag", "");
+        _type = j.value("type", "");
+        _name = j.value("name", "");
 
-    _tag = j.value("tag", "");
-    _type = j.value("type", "");
-    _name = j.value("name", "");
+        _ref = j.value("reference", "");
 
-    if (j.contains("reference") && j["reference"].is_string()) {
-        _ref = parse_reference(j["reference"].get<std::string>());
-    }
-
-    if (j.contains("children") && j["reference"].is_array()) {
-        for (const auto& json_child : j["children"]) {
-            _children.push_back(Structure(json_child.dump()));
+        if (j.contains("children") && j["children"].is_array()) {
+            for (const auto& json_child : j["children"]) {
+                _children.push_back(Structure(json_child.dump()));
+            }
         }
+        else {
+            _name += "НЕ ПОПАЛ. ";
+        }
+    } catch (const std::exception& e) {
+        _name = std::string("Error: ") + e.what();
     }
-
 }
 
 
@@ -59,12 +63,5 @@ std::string Structure::type() const {
     return this -> _type;
 }
 
-std::string Structure::reference() const {
-    if (_ref.empty()) return "";
-    std::string res = std::to_string(_ref[0]);
-    for (size_t i = 1; i < _ref.size(); ++i) {
-        res += "." + std::to_string(_ref[i]);
-    }
-    return res;
-}
+std::string Structure::reference() const { return _ref; }
 
