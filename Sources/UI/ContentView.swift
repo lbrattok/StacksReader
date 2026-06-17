@@ -55,21 +55,34 @@ struct ContentView: View {
             "0ELR"  // Part 8: Topics in Moduli Theory
         ]
 
-        for tag in partTags {
-            do {
-                let jsonStr = try await NetworkManager.shared.fetchTagStructure(tag: tag)
+        let fetchedParts = await withTaskGroup(of: (Int, Structure?).self) { group in
 
-                let cppRoot = jsonStr.withCString { cString in
-                    Structure(std.string(cString))
+            for (index, tag) in partTags.enumerated() {
+                group.addTask {
+                    do {
+                        let jsonStr = try await NetworkManager.shared.fetchTagStructure(tag: tag)
+                        let cppRoot = jsonStr.withCString { cString in
+                            Structure(std.string(cString))
+                        }
+                        return (index, cppRoot)
+                    } catch {
+                        print("Ошибка загрузки \(tag): \(error)")
+                        return (index, nil)
+                    }
                 }
-
-                self.tableOfContents.append(cppRoot)
-
-            } catch {
-                print("Ошибка при загрузке части \(tag): \(error.localizedDescription)")
             }
+
+            var results: [(Int, Structure)] = []
+            for await result in group {
+                if let root = result.1 {
+                    results.append((result.0, root))
+                }
+            }
+
+            return results.sorted(by: { $0.0 < $1.0 }).map { $1 }
         }
 
+        self.tableOfContents = fetchedParts
         isTocLoading = false
     }
 }

@@ -8,10 +8,17 @@ struct StructureView: View {
 
     var level: Int = 0
 
+    @State private var isExpanded: Bool = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button(action: {
-                onTagSelected(node.id)
+                if node.swiftType == "chapter" || node.swiftType == "part" {
+                        isExpanded.toggle()
+                    }
+                if node.swiftType != "chapter" && node.swiftType != "part" {
+                    onTagSelected(node.id)
+                }
             }) {
                 HStack(alignment: .top) {
                     Text("\(node.swiftType.prefix(1).capitalized). \(node.swiftReference)")
@@ -35,12 +42,14 @@ struct StructureView: View {
             }
             .buttonStyle(PlainButtonStyle())
 
-            ForEach(node.swiftChildren) { child in
-                StructureView(
-                    node: child,
-                    onTagSelected: onTagSelected,
-                    level: level + 1
-                )
+            if isExpanded && !node.swiftChildren.isEmpty {
+                ForEach(node.swiftChildren) { child in
+                    StructureView(
+                        node: child,
+                        onTagSelected: onTagSelected,
+                        level: level + 1
+                    )
+                }
             }
         }
     }

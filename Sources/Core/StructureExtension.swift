@@ -1,6 +1,8 @@
 import Foundation
 import CppBack
 
+extension Structure: @unchecked Sendable {}
+
 extension Structure: @retroactive Identifiable {
     public var id: String { 
         String(self.tag()) 
