@@ -34,7 +34,6 @@ Structure::Structure(const std::string& json_str) {
         _tag = j.value("tag", "");
         _type = j.value("type", "");
         _name = j.value("name", "");
-
         _ref = j.value("reference", "");
 
         if (_type != "section" && j.contains("children") && j["children"].is_array()) {

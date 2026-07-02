@@ -23,14 +23,14 @@ struct ContentView: View {
                 .padding()
 
                 if isTocLoading {
-                    ProgressView("Скачивание томов...")
+                    ProgressView("Loading...")
                         .scaleEffect(1.2)
                         .padding()
-                        .background(Color(UIColor.systemBackground).opacity(0.9))
+                        .background (Color(UIColor.systemBackground).opacity(0.9))
                         .cornerRadius(12)
                 }
             }
-            .navigationTitle("Stacks Project")
+            .navigationTitle("The Stacks Project")
 
             .navigationDestination(item: $selectedTag) { tag in
                 TagDetailView(tag: tag)
@@ -46,13 +46,15 @@ struct ContentView: View {
         isTocLoading = true
 
         let partTags = [
-            "0001", // Part 1: Preliminaries
+            "0ELQ", // Part 1: Preliminaries
             "0ELP", // Part 2: Schemes
             "0ELV", // Part 3: Topics in Scheme Theory
             "0ELT", // Part 4: Algebraic Spaces
             "0ELN", // Part 5: Topics in Geometry
             "0ELW", // Part 6: Deformation Theory
-            "0ELR"  // Part 8: Topics in Moduli Theory
+            "0ELS", // Part 7: Algebraic Stacks
+            "0ELR", // Part 8: Topics in Moduli Theory
+            "0ELU"  // Part 9: Miscellany
         ]
 
         let fetchedParts = await withTaskGroup(of: (Int, Structure?).self) { group in
@@ -60,13 +62,21 @@ struct ContentView: View {
             for (index, tag) in partTags.enumerated() {
                 group.addTask {
                     do {
-                        let jsonStr = try await NetworkManager.shared.fetchTagStructure(tag: tag)
+                        let jsonStr: String
+
+                        if let cachedJSON = await CacheManager.shared.getTOC(tag: tag) {
+                            jsonStr = cachedJSON
+                        } else {
+                            jsonStr = try await NetworkManager.shared.fetchTag(tag: tag)
+                            await CacheManager.shared.saveTOC(tag: tag, jsonString: jsonStr)
+                        }
+
                         let cppRoot = jsonStr.withCString { cString in
                             Structure(std.string(cString))
                         }
+
                         return (index, cppRoot)
                     } catch {
-                        print("Ошибка загрузки \(tag): \(error)")
                         return (index, nil)
                     }
                 }

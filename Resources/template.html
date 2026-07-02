@@ -9,28 +9,24 @@
             font-size: 105%; line-height: 1.6; padding: 16px; margin: 0; 
         }
         a { text-decoration: none; }
-        
-        /* СВЕТЛАЯ ТЕМА */
-        @media (prefers-color-scheme: light) { 
-            a { color: #007AFF; } 
+
+        @media (prefers-color-scheme: light) {
+            a { color: #007AFF; }
         }
-        
-        /* ТЕМНАЯ ТЕМА */
-        @media (prefers-color-scheme: dark) { 
-            a { color: #5E92F3; } 
-            body { 
-                color: #ffffff !important; /* Явно задаем базовый белый */
-                background-color: #000000; 
-            } 
-            
-            /* 1. Уничтожаем инлайн-хардкод XyJax: заставляем весь текст наследовать белый цвет body */
+
+        @media (prefers-color-scheme: dark) {
+            a { color: #5E92F3; }
+            body {
+                color: #ffffff !important;
+                background-color: #000000;
+            }
+
             mjx-container,
             mjx-container * {
                 color: inherit !important;
                 border-color: inherit !important;
             }
-            
-            /* 2. Заставляем все SVG-элементы (стрелки и заливки) использовать сброшенный белый цвет */
+
             mjx-container svg path,
             mjx-container svg line,
             mjx-container svg polygon,
@@ -40,8 +36,8 @@
                 fill: currentColor !important;
             }
         }
-        
-        mjx-container[display="true"] { 
+
+        mjx-container[display="true"] {
             overflow-x: auto; overflow-y: visible; max-width: 100%; padding: 15px 0; 
         }
         mjx-container[display="false"] { white-space: nowrap; }
@@ -51,7 +47,7 @@
         window.MathJax = {
             loader: {
                 paths: {custom: './mathjax'},
-                load: ['[custom]/xypic.js'] // Теперь этот запрос пройдет успешно!
+                load: ['[custom]/xypic.js']
             },
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
